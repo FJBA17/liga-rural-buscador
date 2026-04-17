@@ -1,0 +1,125 @@
+/* LAYOUT */
+.layout { display: flex; min-height: 100vh; }
+
+/* SIDEBAR */
+.sidebar {
+  width: var(--sidebar-w);
+  background: #2a0030;
+  border-right: 1px solid var(--border);
+  display: flex; flex-direction: column; flex-shrink: 0;
+  transition: transform 0.25s ease;
+}
+.sidebar-logo { display:flex; align-items:center; gap:10px; padding:24px 16px 20px; border-bottom:1px solid var(--border); font-weight:700; font-size:1rem; }
+.sidebar-logo img { width:36px; height:36px; object-fit:contain; }
+.sidebar-nav { list-style:none; padding:12px 0; flex:1; }
+.sidebar-nav li { margin:2px 8px; }
+.sidebar-nav button { width:100%; display:flex; align-items:center; gap:10px; text-align:left; padding:11px 14px; border-radius:8px; border:none; background:transparent; color:var(--muted); font-size:0.9rem; cursor:pointer; transition:background 0.15s,color 0.15s; }
+.sidebar-nav button svg { flex-shrink:0; opacity:0.7; transition:opacity 0.15s; }
+.sidebar-nav button:hover { background:var(--card); color:var(--text); }
+.sidebar-nav button:hover svg { opacity:1; }
+.sidebar-nav button.active { background:var(--accent2); color:#fff; font-weight:600; }
+.sidebar-nav button.active svg { opacity:1; }
+
+/* TOPBAR */
+.topbar { display:none; align-items:center; gap:12px; padding:10px 16px; background:#2a0030; border-bottom:1px solid var(--border); position:sticky; top:0; z-index:10; }
+.topbar-title { display:flex; align-items:center; gap:8px; font-weight:700; font-size:1rem; }
+.topbar-logo { width:28px; height:28px; object-fit:contain; }
+.hamburger { display:flex; align-items:center; justify-content:center; width:36px; height:36px; background:rgba(255,255,255,0.06); border:1px solid var(--border); border-radius:8px; cursor:pointer; padding:0; flex-shrink:0; color:var(--text); transition:background 0.15s; }
+.hamburger:hover { background:rgba(255,255,255,0.12); }
+
+/* CONTENT */
+.content { flex:1; display:flex; flex-direction:column; min-width:0; }
+main { flex:1; }
+
+/* OVERLAY */
+.overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.5); z-index:40; }
+
+/* MOBILE */
+@media (max-width:640px) {
+  .sidebar { position:fixed; inset-block:0; left:0; z-index:50; transform:translateX(-100%); }
+  .sidebar.open { transform:translateX(0); }
+  .overlay { display:block; }
+  .topbar { display:flex; }
+}
+
+/* PAGINA */
+.pagina { max-width:640px; margin:0 auto; padding:28px 16px 40px; }
+.hero-header { display:flex; align-items:center; gap:16px; margin-bottom:28px; }
+.hero-logo { width:64px; height:64px; object-fit:contain; }
+.hero-title { font-size:1.4rem; font-weight:700; line-height:1.2; }
+.hero-sub { font-size:0.82rem; color:var(--muted); margin-top:3px; }
+
+/* FORM */
+.search-form { display:flex; flex-direction:column; gap:10px; }
+.modo-tabs { display:flex; border:1.5px solid var(--border); border-radius:10px; overflow:hidden; }
+.modo-tab { flex:1; padding:10px; border:none; background:var(--card); color:var(--muted); font-size:0.9rem; cursor:pointer; transition:background 0.15s,color 0.15s; }
+.modo-tab.active { background:var(--accent2); color:#fff; font-weight:600; }
+.input-row { display:flex; gap:8px; }
+.search-input { flex:1; padding:12px 14px; border-radius:10px; border:1.5px solid var(--border); background:var(--card); color:var(--text); font-size:1rem; outline:none; transition:border-color 0.2s; }
+.search-input::placeholder { color:var(--muted); opacity:0.6; }
+.search-input:focus { border-color:var(--accent); }
+.search-btn { padding:12px 20px; border-radius:10px; border:none; background:linear-gradient(135deg,var(--accent) 0%,var(--accent2) 100%); color:#fff; font-size:1rem; font-weight:600; cursor:pointer; transition:opacity 0.2s; white-space:nowrap; }
+.search-btn:disabled { opacity:0.45; cursor:default; }
+
+/* RESULTS */
+.resultados { margin-top:20px; display:flex; flex-direction:column; gap:10px; }
+.msg-vacio,.msg-error { margin-top:20px; text-align:center; font-size:0.9rem; color:var(--muted); }
+.msg-error { color:#f87171; }
+.card { background:var(--card); border:1px solid var(--border); border-radius:12px; padding:14px 16px; }
+.card-texto { font-size:0.95rem; line-height:1.5; color:var(--text); }
+.card-nombre { font-weight:700; }
+.card-equipo { display:inline-block; background:var(--accent2); color:#fff; border-radius:5px; padding:1px 7px; font-weight:600; font-size:0.88rem; }
+.card-rut { font-size:0.8rem; color:var(--muted); margin-top:5px; }
+
+/* ACERCA */
+.section-title { font-size:1.2rem; font-weight:700; margin-bottom:16px; }
+.section-text { color:var(--muted); line-height:1.6; font-size:0.95rem; }
+.section-text strong { color:var(--text); }
+
+/* CLUBES */
+.club-filter { width:100%; margin-bottom:16px; }
+.clubes-lista { display:flex; flex-direction:column; gap:8px; }
+
+/* Tarjeta-botón en la lista */
+.club-card-btn {
+  width:100%; display:flex; align-items:center; gap:8px;
+  padding:14px 16px; border:1px solid var(--border); border-radius:12px;
+  background:var(--card); color:var(--text); cursor:pointer; text-align:left;
+  transition:background 0.15s;
+}
+.club-card-btn:hover { background: rgba(255,255,255,0.06); }
+
+.club-nombre { flex:1; font-weight:600; font-size:0.95rem; }
+.club-count { font-size:0.78rem; color:var(--muted); white-space:nowrap; }
+.club-chevron { font-size:1rem; color:var(--muted); margin-left:4px; }
+
+/* Botón volver */
+.back-btn {
+  display:inline-flex; align-items:center; gap:6px;
+  padding:8px 14px; margin-bottom:20px;
+  border:1px solid var(--border); border-radius:8px;
+  background:transparent; color:var(--muted); cursor:pointer;
+  font-size:0.85rem; transition:background 0.15s;
+}
+.back-btn:hover { background: rgba(255,255,255,0.06); color:var(--text); }
+
+/* Cabecera del detalle de club */
+.club-detalle-header {
+  display:flex; align-items:baseline; gap:12px; margin-bottom:16px;
+}
+.club-detalle-nombre { font-size:1.25rem; font-weight:700; margin:0; }
+
+/* Lista de jugadores (detalle) */
+.club-jugadores {
+  list-style:none; border-top:1px solid var(--border);
+  padding:8px 0; margin:0;
+}
+.club-jugadores-detalle { border-top:none; }
+.club-jugador {
+  display:flex; justify-content:space-between; align-items:center;
+  padding:7px 16px; gap:8px;
+  border-bottom:1px solid rgba(124,14,84,0.3);
+}
+.club-jugador:last-child { border-bottom:none; }
+.cj-nombre { font-size:0.88rem; color:var(--text); }
+.cj-rut { font-size:0.78rem; color:var(--muted); white-space:nowrap; }

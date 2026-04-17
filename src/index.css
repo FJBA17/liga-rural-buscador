@@ -1,0 +1,18 @@
+:root {
+  --bg:      #37003c;
+  --card:    #4a0638;
+  --accent:  #c71585;
+  --accent2: #8b0e54;
+  --text:    #ffffff;
+  --muted:   #d8bfd8;
+  --border:  #7c0e54;
+  --sidebar-w: 220px;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html, body, #root {
+  height: 100%;
+  font-family: system-ui, -apple-system, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  -webkit-font-smoothing: antialiased;
+}

@@ -93,6 +93,20 @@ async function cargarJornadas(): Promise<Jornada[]> {
   return (data.jornadas ?? []).sort((a, b) => a.numero - b.numero)
 }
 
+async function cargarJornadasHabilitadas(): Promise<Jornada[]> {
+  const data = await gql<{ jornadasHabilitadas: Jornada[] }>(
+    `{ jornadasHabilitadas { id numero fecha esSegundaVuelta estado } }`,
+  )
+  return (data.jornadasHabilitadas ?? []).sort((a, b) => a.numero - b.numero)
+}
+
+async function cargarLigaConfig(): Promise<{ mensajeSuspendidos: string }> {
+  const data = await gql<{ ligaConfig: { mensajeSuspendidos: string } }>(
+    `{ ligaConfig { mensajeSuspendidos } }`,
+  )
+  return data.ligaConfig ?? { mensajeSuspendidos: '' }
+}
+
 async function cargarPartidosPorJornada(jornadaId: string): Promise<PartidoSimple[]> {
   const data = await gql<{ partidosPorJornada: PartidoSimple[] }>(
     `query($id:ID!){ partidosPorJornada(jornadaId:$id){ id estado
@@ -580,7 +594,7 @@ function PaginaResultados() {
   const [errorEnvio, setErrorEnvio] = useState('')
 
   useEffect(() => {
-    cargarJornadas()
+    cargarJornadasHabilitadas()
       .then(d => { setJornadas(d); setLoadingJ(false) })
       .catch(() => setLoadingJ(false))
   }, [])
@@ -645,19 +659,18 @@ function PaginaResultados() {
     if (!jornada || !partido) return ''
     const local     = partido.clubLocal?.nombre     ?? 'Local'
     const visitante = partido.clubVisitante?.nombre ?? 'Visitante'
-    const lineas    = [`*Liga Rural 2026 – Jornada ${jornada.numero}*\n`, `*${local} vs ${visitante}*`]
+    const lineas    = [`*Jornada ${jornada.numero}*\n`, `*${local} vs ${visitante}*`]
     let pL = 0, pV = 0
     for (const serie of SERIES) {
       const r = existentes.find(x => x.tipoSerie === serie)
       if (!r) continue
       const ptV = PTS_VICTORIA[serie], ptE = PTS_EMPATE[serie]
-      let pts = ''
-      if      (r.golesLocal > r.golesVisitante)  { pts = `${local} +${ptV}`;     pL += ptV }
-      else if (r.golesVisitante > r.golesLocal)   { pts = `${visitante} +${ptV}`; pV += ptV }
-      else                                         { pts = `Empate +${ptE} c/u`;  pL += ptE; pV += ptE }
-      lineas.push(`${SERIE_LABEL[serie]}: ${r.golesLocal}-${r.golesVisitante} (${pts})`)
+      if      (r.golesLocal > r.golesVisitante)  { pL += ptV }
+      else if (r.golesVisitante > r.golesLocal)   { pV += ptV }
+      else                                         { pL += ptE; pV += ptE }
+      lineas.push(`${SERIE_LABEL[serie]}: ${r.golesLocal}-${r.golesVisitante}`)
     }
-    lineas.push(`\n📊 *${local} ${pL}pts – ${visitante} ${pV}pts*`)
+    lineas.push(`\n*${local} ${pL}pts*\n*${visitante} ${pV}pts*`)
     return lineas.join('\n')
   }
 
@@ -840,6 +853,28 @@ interface AccesoItem {
 }
 
 function PaginaHome({ onNavegar }: { onNavegar: (p: Pagina) => void }) {
+  const [mensajeSusp, setMensajeSusp] = useState('')
+  const [descargandoSusp, setDescargandoSusp] = useState(false)
+
+  useEffect(() => {
+    cargarLigaConfig().then(c => setMensajeSusp(c.mensajeSuspendidos)).catch(() => {})
+  }, [])
+
+  async function descargarSuspendidos() {
+    setDescargandoSusp(true)
+    try {
+      const res  = await fetch(`${API_URL}/reportes/jugadores-suspendidos`)
+      const blob = await res.blob()
+      const url  = URL.createObjectURL(blob)
+      const a    = document.createElement('a')
+      a.href = url; a.download = 'Suspendidos.pdf'
+      document.body.appendChild(a); a.click()
+      document.body.removeChild(a)
+      URL.revokeObjectURL(url)
+    } catch { /* silencioso */ }
+    finally { setDescargandoSusp(false) }
+  }
+
   const accesos: AccesoItem[] = [
     {
       id: 'buscador2026',
@@ -902,8 +937,24 @@ function PaginaHome({ onNavegar }: { onNavegar: (p: Pagina) => void }) {
         onClick={() => onNavegar('resultados')}
       >
         <span className="acceso-icon"><ClipboardList size={28} strokeWidth={1.5} /></span>
-        <p className="acceso-label">Ingresar Resultados</p>
-        <p className="acceso-desc">Carga los marcadores de la jornada y envía resumen por WhatsApp</p>
+        <div>
+          <p className="acceso-label">Ingresar Resultados</p>
+          <p className="acceso-desc">Carga los marcadores de la jornada y envía resumen por WhatsApp</p>
+        </div>
+      </button>
+
+      <button
+        className="acceso-card acceso-card-full acceso-card-susp"
+        style={{ '--acceso-color': '#e74c3c' } as React.CSSProperties}
+        onClick={descargarSuspendidos}
+        disabled={descargandoSusp}
+      >
+        <span className="acceso-icon"><FileText size={28} strokeWidth={1.5} /></span>
+        <div className="acceso-susp-body">
+          <p className="acceso-label">{descargandoSusp ? 'Descargando…' : 'Descargar Jugadores Suspendidos'}</p>
+          <p className="acceso-susp-msg">{mensajeSusp || 'Lista oficial de suspensiones activas'}</p>
+        </div>
+        <span className="acceso-pdf-badge">PDF</span>
       </button>
     </div>
   )

@@ -18,7 +18,6 @@ const logos: Record<string, string> = {
   'CD Juventud el Trapiche': TrapicheLogo,
   'Miraflores':              MirafloresLogo,
   'CD Nilcunlauta':          NilcunlautaLogo,
-  // alias cortos
   'Talcarehue':  TalcarehueLogo,
   'Polonia':     PoloniaLogo,
   'Condor':      CondorLogo,
@@ -26,6 +25,21 @@ const logos: Record<string, string> = {
   'Nilcunlauta': NilcunlautaLogo,
 }
 
-export function getClubLogo(nombre: string): string {
-  return logos[nombre] ?? ''
+const colores: Record<string, string> = {
+  'Atletico Talcarehue':    '#0c0b4d',
+  'Santa Isabel de Polonia':'#8c0000',
+  'San Jose de los Lingues':'#f1c80a',
+  'Condor de Roma':         '#6a1b9a',
+  'Santa Elba':             '#000000',
+  'Carlina':                '#e3e3e3',
+  'CD Juventud el Trapiche':'#013088',
+  'Miraflores':             '#0c4937',
+  'CD Nilcunlauta':         '#457357',
 }
+
+// Clubes con color claro que necesitan texto oscuro
+const clubesClaro = new Set(['Carlina', 'San Jose de los Lingues'])
+
+export function getClubLogo(nombre: string): string   { return logos[nombre]   ?? '' }
+export function getClubColor(nombre: string): string  { return colores[nombre] ?? '#c71585' }
+export function getClubTextDark(nombre: string): boolean { return clubesClaro.has(nombre) }

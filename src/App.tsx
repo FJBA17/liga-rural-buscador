@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { Menu, X, Search, Users, Info, Trophy, FileText, Home, ClipboardList, MessageCircle } from 'lucide-react'
 import logoLiga from './assets/LogoLiga.png'
 import logoSmall from './assets/LogoLigaSmall.png'
-import { getClubLogo } from './clubImages'
+import { getClubLogo, getClubColor, getClubTextDark } from './clubImages'
 import './App.css'
 
 const GQL_URL = import.meta.env.VITE_GRAPHQL_URL as string
@@ -352,22 +352,28 @@ function PaginaBuscador2026() {
         <div className="resultados">
           {resultados.length === 0
             ? <p className="msg-vacio">No se encontraron jugadores en la temporada 2026.</p>
-            : resultados.map(j => (
-                <div className="card card-2026" key={j.id}>
-                  <div className="card-2026-top">
-                    <div>
-                      <p className="card-nombre">{j.nombre}</p>
-                      <p className="card-rut">{j.rut}</p>
+            : resultados.map(j => {
+                const color    = getClubColor(j.club)
+                const logo     = getClubLogo(j.club)
+                const textDark = getClubTextDark(j.club)
+                return (
+                  <div className="card card-2026" key={j.id}
+                    style={{ '--club-color': color, '--club-text': textDark ? '#111' : '#fff', '--club-muted': textDark ? '#444' : 'rgba(255,255,255,0.7)' } as React.CSSProperties}>
+                    <div className="card-2026-body">
+                      <div className="card-2026-info">
+                        <p className="card-nombre">{j.nombre}</p>
+                        <p className="card-rut">{j.rut}</p>
+                      </div>
                     </div>
-                    <span className="card-equipo">{j.club}</span>
+                    {logo && <img src={logo} alt={j.club} className="card-2026-escudo" />}
+                    <div className="jornadas-strip">
+                      <span className="badge badge-pv">1ª Vuelta: {j.jornadasPV}</span>
+                      <span className="badge badge-sv">2ª Vuelta: {j.jornadasSV}</span>
+                      <span className="badge badge-total">Total: {j.jornadasTotal}</span>
+                    </div>
                   </div>
-                  <div className="jornadas-strip">
-                    <span className="badge badge-pv">1ª Vuelta: {j.jornadasPV}</span>
-                    <span className="badge badge-sv">2ª Vuelta: {j.jornadasSV}</span>
-                    <span className="badge badge-total">Total: {j.jornadasTotal}</span>
-                  </div>
-                </div>
-              ))}
+                )
+              })}
         </div>
       )}
     </div>
